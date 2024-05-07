@@ -9,18 +9,7 @@ if(!isset($_SESSION['nysc_admin_page_dutse'])){
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<link rel="stylesheet" type="text/css" href="../css/bootstrap.min.css">
-	<link rel="stylesheet" type="text/css" href="../css/fontawesome-all.css">
-	<link rel="stylesheet" type="text/css" href="../css/animate.css">
-	
-
-	<script type="text/javascript" src="../js/jquery.min.js"></script>
-
-	<script type="text/javascript" src="../js/bootstrap.min.js"></script>
-
-	<script src="../js/jquery.stateLga.js"></script>
-    <script src="../js/jquery.ucfirst.js"></script>
-
+	<?php require 'incs/info.php'; ?>
 	<title>Admin Dashboard</title>
 	<style type="text/css">
 		body{
@@ -42,11 +31,26 @@ if(!isset($_SESSION['nysc_admin_page_dutse'])){
 			.upper_logo{width: 20%}
 			.header{padding: 10px; font-size: 17px}
 		}
-		.logger, .logger:hover{font-size: 18px; color: #fff; font-family: lucida console; font-weight:lighter; }
+		.logger, .logger:hover{font-size: 15px; color: #fff; font-family: lucida console; font-weight:lighter; }
 		.big_text{font-size: 40px}
 		.flows{background: linear-gradient(#123456, #000);}
 		.borderless{border: 0}
-		.grey{background: linear-gradient(#b1b1b1, #efefef);}
+		.grey{background: linear-gradient(#b1b1b1, #efefef); }
+		a, a:hover{text-decoration: none;}
+		footer{
+			position: fixed;
+			bottom: 0;
+			width: 100%;
+			padding: 10px;
+			background: darkgreen;
+			color: #fff;
+			font-size: 14px;
+			border-top: 5px solid darkred;
+			
+		}
+		.main_box{
+			margin-bottom: 100px;
+		}
 	</style>
 </head>
 <body>
@@ -58,7 +62,7 @@ if(!isset($_SESSION['nysc_admin_page_dutse'])){
 	</div>
 	<div style="position: absolute; right: 10px; top: 50px;">
 		<div>
-			<a href="dashboard.php?logout=1" class="logger"><span class="fa fa-sign-out-alt"></span> Logout</a>
+			<a href="?logout_admin=1" class="logger"><span class="fa fa-sign-out-alt"></span> Logout</a>
 		</div>
 	</div>
 </header>
@@ -76,13 +80,13 @@ if(!isset($_SESSION['nysc_admin_page_dutse'])){
 				<b><?php echo $wors; ?></b>
 			</div>
 		<?php endforeach; ?>
-		<div class="card bg-dark text-white borderless mt-4">
+		<div class="card bg-dark text-white borderless mt-4 main_box">
 			<div class="card-header text-center">
 				<h4><span class="fa fa-tachometer-alt"></span> Quick Actions</h4>
 			</div>
 			<div class="card-body grey">
 				<div class="row">
-					<div class="col-md-4">
+					<div class="col-md-4 mb-4">
 						<a href="javascript:void(0)" data-toggle = "modal" data-target = "#makeUser">
 							<div class="card bg-primary text-white text-center borderless ">
 								<div class="card-header">
@@ -94,33 +98,33 @@ if(!isset($_SESSION['nysc_admin_page_dutse'])){
 							</div>
 						</a>
 					</div>
-					<div class="col-md-4">
-						<a href="javascript:void(0)" >
+					<div class="col-md-4 mb-4">
+						<a href="clear.php" >
 							<div class="card bg-info text-white text-center borderless ">
 								<div class="card-header">
 									Assign Clearance Date
 								</div>
 								<div class="card-body bg-white big_text  flows">
-									<span class="fa fa-calendar animated shake infinite"></span>
+									<span class="fa fa-calendar animated rubberBand infinite"></span>
 								</div>
 							</div>
 						</a>
 					</div>
-					<div class="col-md-4">
-						<a href="">
+					<div class="col-md-4 mb-4">
+						<a href="cds.php">
 							<div class="card bg-success text-white text-center borderless ">
 								<div class="card-header">
-									Assign Comunity development Service
+									Assign Comumnity Development Service
 								</div>
 								<div class="card-body bg-white big_text  flows">
-									<span class="fa fa-chess animated rubberBand infinite"></span>
+									<span class="fab fa-servicestack animated rubberBand infinite"></span>
 								</div>
 							</div>
 						</a>
 					</div>
 				</div>
 
-				<div class="row mt-4">
+				<div class="row mt-4 mb-4">
 					<div class="col-md-4">
 						<a href="javascript:void(0)" data-toggle = "modal" data-target = "#batch">
 							<div class="card bg-secondary text-white text-center borderless ">
@@ -133,11 +137,38 @@ if(!isset($_SESSION['nysc_admin_page_dutse'])){
 							</div>
 						</a>
 					</div>
+
+					<div class="col-md-4">
+						<a href="groups.php" data-toggle = "modal" data-target = "#group">
+							<div class="card bg-danger text-white text-center borderless ">
+								<div class="card-header">
+									Manage CDS Groups
+								</div>
+								<div class="card-body bg-secondary big_text  flows">
+									<span class="fa fa-tasks animated flip infinite"></span>
+								</div>
+							</div>
+						</a>
+					</div>
+					<div class="col-md-4">
+						<a href="users.php">
+							<div class="card bg-warning text-white text-center borderless ">
+								<div class="card-header">
+									Corp Members
+								</div>
+								<div class="card-body bg-secondary big_text  flows">
+									<span class="fa fa-users animated flip infinite"></span>
+								</div>
+							</div>
+						</a>
+					</div>
 				</div>
 			</div>
 		</div>
 	</div>
 </section>
+
+<?php require "incs/footer.php"; ?>
 
 <?php include 'modals.php'; ?>
 <script>	

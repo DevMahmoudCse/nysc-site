@@ -1,5 +1,6 @@
 <?php
 // echo md5("admin@nysc");
+// echo md5("user@nysc");
 require "incs/server.inc.php";
 ?>
 <!DOCTYPE html>
@@ -97,12 +98,5 @@ require "incs/server.inc.php";
 		</div>
 	</div>
 </div>
-<footer>
-	<div class="footer">
-		<div class="text-center">
-			Copyright <?php echo date("Y"); ?> National Youth Service Corps. All rights reserved.
-		</div>
-	</div>
-</footer>
-</body>
+<?php require "admin/incs/footer.php"; ?></body>
 </html>

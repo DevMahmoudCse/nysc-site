@@ -45,18 +45,14 @@ function login($tablename, $email, $password, $order){
 		$my_data = $query->get_result();
 		if($my_data->num_rows == 0){
 			$output = 0;
-			array_push($err, "Invalid Login Details " . $email);
+			array_push($err, "Invalid Login Details ");
 
 		}
-		// else{
-		// 	$_SESSION['nysc_admin_page_dutse'] = $email;
-		// 	header("location: admin/dashboard.php");
-			
-		// }
+
 
 		if(count($err) == 0){
 			$_SESSION['nysc_admin_page_dutse'] = $email;
-		 	header("location: admin/dashboard.php");
+		 	header("location: admin/");
 		}
 	}
 	else if($order == "corper"){
@@ -73,9 +69,9 @@ function login($tablename, $email, $password, $order){
 			array_push($err, "Invalid Login Details");
 
 		}
-		else{
-			$output = 1;
-			
+		if(count($err) == 0){
+			$_SESSION['nysc_corper_page_dutse'] = $email;
+			header("location: corpers/");
 		}
 	}
 
@@ -86,7 +82,7 @@ function login($tablename, $email, $password, $order){
 	$query->close();
 }
 
-function add_members($tablename, $name, $email, $gender, $batch, $lga, $state){
+function add_members($tablename, $name, $email, $gender, $batch, $lga, $state, $password){
 	require 'database.inc.php';
 	global $err, $good;
 
@@ -103,8 +99,12 @@ function add_members($tablename, $name, $email, $gender, $batch, $lga, $state){
 		}
 	}
 	if(count($err) == 0){
-		$querys = $conn->prepare("INSERT INTO `$tablename` (`name`, `email`, `gender`, `batch`, `lga`, `state`) VALUES (?, ?, ?, ?, ?, ?)");
-		$querys->bind_param("ssssss", $name, $email, $gender, $batch, $lga, $state);
+		$sql = $conn->query("SELECT * FROM `groups` ORDER BY RAND() LIMIT 1");
+		$data = $sql->fetch_assoc();
+		$row = $data['name'];
+		$querys = $conn->prepare("INSERT INTO `$tablename` (`name`, `email`, `gender`, `batch`, `lga`, `state`, `groups`, `password`) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+		$new = md5($password);
+		$querys->bind_param("ssssssss", $name, $email, $gender, $batch, $lga, $state, $row, $new);
 
 		if($querys->execute()){
 			array_push($good, "Data Added Successfully!");
@@ -146,6 +146,35 @@ function create_batch($tablename, $name, $year){
 	$conn->close();
 }
 
+function create_group($tablename, $name){
+	require "database.inc.php";
+	global $good, $err;
+
+	$data = $conn->prepare("SELECT * FROM `$tablename` WHERE `name` = ?");
+	$data->bind_param("s", $name);
+	$data->execute();
+
+	$results = $data->get_result();
+	$result = $results->fetch_assoc();
+
+	if($result){
+		if($result['name'] === $name){
+			array_push($err, "Group (" . $name . ") Already Existed");
+		}
+	}
+	if(count($err) == 0){
+		$query = $conn->prepare("INSERT INTO `$tablename` (`name`) VALUES (?)");
+	$query->bind_param("s", $name);
+	if($query->execute()){
+		array_push($good, "Group Added Successfully! (" . $name . ")" );
+	}
+
+	
+	}
+	
+	$conn->close();
+}
+
 function display_batch($tablename){
 	require "database.inc.php";
 	global $row, $query;
@@ -157,7 +186,68 @@ function delete($id, $tablename){
 	require "database.inc.php";
 	global $good;
 	if($query = $conn->query("DELETE FROM `$tablename` WHERE `id` = '$id'")){
-		array_push($good, "Batch Deleted Successfully!");
+		array_push($good, "$tablename Deleted Successfully!");
+	}
+}
+
+function add_clearance($tablename, $batch, $month, $year, $date, $info, $time){
+	require 'database.inc.php';
+	global $err, $good;
+
+	$sql = $conn->prepare("INSERT INTO `$tablename` (`batch`, `month`, `year`, `date`, `info`, `time`) VALUES (?, ?, ?, ?, ?, ?)");
+	$sql->bind_param("ssssss", $batch, $month, $year, $date, $info, $time);
+
+	$query = $conn->prepare("SELECT * FROM `$tablename` WHERE `batch` = ? AND `month` = ? AND `year` = ?");
+	$query->bind_param("sss", $batch, $month, $year);
+	$query->execute();
+
+	$data = $query->get_result();
+	$row = $data->fetch_assoc();
+
+	if($row){
+		if(($row['batch'] === $batch) && ($row['month'] === $month)){
+			array_push($err, "Clearance for this batch already exist");
+		}
+	}
+	if(count($err) == 0){
+		if($sql->execute()){
+			array_push($good, "Clearance date added Successfully!!!");
+		}
+	}
+}
+
+function add_cds($tablename, $batch, $month, $year, $date, $venue, $time){
+	require 'database.inc.php';
+	global $err, $good;
+
+	$sql = $conn->prepare("INSERT INTO `$tablename` (`batch`, `month`, `year`, `date`, `venue`, `time`) VALUES (?, ?, ?, ?, ?, ?)");
+	$sql->bind_param("ssssss", $batch, $month, $year, $date, $venue, $time);
+
+	$query = $conn->prepare("SELECT * FROM `$tablename` WHERE `batch` = ? AND `month` = ? AND `year` = ?");
+	$query->bind_param("sss", $batch, $month, $year);
+	$query->execute();
+
+	$data = $query->get_result();
+	$row = $data->fetch_assoc();
+
+	if($row){
+		if(($row['batch'] === $batch) && ($row['month'] === $month)){
+			array_push($err, "CDS for this batch already exist");
+		}
+	}
+	if(count($err) == 0){
+		if($sql->execute()){
+			array_push($good, "CDS date added Successfully!!!");
+		}
+	}
+}
+
+function delete_cds($tablename, $id){
+	require 'database.inc.php';
+	global $err, $good;
+
+	if($sql = $conn->query("DELETE FROM `$tablename` WHERE `id` = '$id'")){
+		array_push($good,  "CDS Deleted Successfully");
 	}
 }
 ?>
